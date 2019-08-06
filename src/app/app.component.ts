@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { Post } from './post.model';
+import { PostsService } from './posts.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,55 +14,24 @@ export class AppComponent implements OnInit {
   loadedPosts: Post[] = [];
   isFetching = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private postsService : PostsService) {}
 
   ngOnInit() {
-    this.fetchPosts();
+    this.postsService.fetchPosts();
   }
 
-  onCreatePost(postData: { title: string; content: string }) {
-    // Send Http request
-    this.http
-      .post<{ name: string }>(
-        'https://ng-complete-guide-d628c.firebaseio.com/posts.json',
-        postData
-      )
-      // only send when you subscribe
-      .subscribe(responseData => {
-        console.log(responseData);
-      });
+  onCreatePost(postData: Post) {
+    // send Http Request
+    this.postsService.createAndStorePost(postData.title,postData.content);
   }
 
   onFetchPosts() {
     // Send Http request
-    this.fetchPosts();
+    this.postsService.fetchPosts();
   }
 
   onClearPosts() {
     // Send Http request
   }
 
-  //GET DATA FROM FIREBASE
-  private fetchPosts(){
-    this.isFetching = true;
-    this.http
-    // what data you will getting back it's key: string with Post Model
-    .get<{[key: string]: Post }>('https://ng-complete-guide-d628c.firebaseio.com/posts.json')
-    .pipe(
-      map(responseData => {
-      const postArray: Post[] = [];
-      for(const key in responseData){
-        if(responseData.hasOwnProperty(key)){
-        postArray.push({...responseData[key], id: key})
-        }
-      }
-      return postArray;
-    }))
-    .subscribe(posts => {
-      //Transforming Javascript to 
-      console.log(posts);
-      this.isFetching = false;
-      this.loadedPosts = posts;
-    });
-  }
 }
