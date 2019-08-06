@@ -25,7 +25,7 @@ export class PostsService {
     }
 
     fetchPosts() {
-        this.http
+        return this.http
         // what data you will getting back it's key: string with Post Model
         .get<{[key: string]: Post }>('https://ng-complete-guide-d628c.firebaseio.com/posts.json')
         .pipe(
@@ -33,15 +33,10 @@ export class PostsService {
           const postArray: Post[] = [];
           for(const key in responseData){
             if(responseData.hasOwnProperty(key)){
-            postArray.push({...responseData[key], id: key})
+            postArray.push({...responseData[key], id: key});
             }
           }
           return postArray;
-        }))
-        .subscribe(posts => {
-          //Transforming Javascript to 
-          console.log(posts);
-          
-        });
+        }));
     }
 }
